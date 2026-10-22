@@ -74,6 +74,7 @@ az login
 ```
 
 !IMAGE[azlogin.jpg](./images/azlogin.jpg)
+!IMAHE[azlogin.jpg](images/azlogin.jpg)
 Choose Work or school Account
 Click on Username and password to Autofill and Authenticate.
 

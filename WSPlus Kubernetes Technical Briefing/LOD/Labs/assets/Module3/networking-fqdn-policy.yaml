@@ -1,0 +1,31 @@
+# Allows http-client pods to reach only example.com over HTTPS.
+# Requires: AKS with Azure CNI Powered by Cilium and ACNS enabled (--enable-acns).
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: client-allow-example
+  namespace: acns-demo
+spec:
+  endpointSelector:
+    matchLabels:
+      app: http-client
+  egress:
+    # Allow DNS to kube-dns so FQDN can be resolved.
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: "*"
+    # Allow HTTPS only to example.com (resolved via FQDN).
+    - toFQDNs:
+        - matchName: "example.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

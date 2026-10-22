@@ -1,0 +1,23 @@
+# Allows http-client to call only GET / on http-server (HTTP L7 policy).
+# Requires: AKS with Cilium dataplane and --acns-advanced-networkpolicies L7.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: server-allow-get-only
+  namespace: acns-demo
+spec:
+  endpointSelector:
+    matchLabels:
+      app: http-server
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: http-client
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+          rules:
+            http:
+              - method: "GET"
+                path: "/"

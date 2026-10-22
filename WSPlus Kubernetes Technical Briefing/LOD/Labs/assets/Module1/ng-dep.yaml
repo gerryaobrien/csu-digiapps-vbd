@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ng-dep
+  labels:
+    app: ng-dep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ng-dep
+  template:
+    metadata:
+      labels:
+        app: ng-dep
+    spec:
+      containers:
+        - name: nginx
+          image: k8slab/nginx:1.0
+          ports:
+            - containerPort: 80

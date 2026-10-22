@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: azure-disk-pv
+spec:
+  capacity:
+    storage: 128Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azure-disk-csi
+  csi:
+    driver: disk.csi.azure.com
+    readOnly: false
+    # Replace with the resourceID of the pre-provisioned Azure managed disk
+    volumeHandle: /subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Compute/disks/<disk-name>
+    volumeAttributes:
+      fsType: ext4

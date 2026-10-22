@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-svc
+spec:
+  type: NodePort
+  selector:
+    sample: color
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30101
+      protocol: TCP

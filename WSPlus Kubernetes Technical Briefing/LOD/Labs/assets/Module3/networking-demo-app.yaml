@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: acns-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-server
+  namespace: acns-demo
+  labels:
+    app: http-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-server
+  template:
+    metadata:
+      labels:
+        app: http-server
+    spec:
+      containers:
+        - name: http-server
+          image: mcr.microsoft.com/azurelinux/base/nginx:1.25
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-server
+  namespace: acns-demo
+spec:
+  selector:
+    app: http-server
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-client
+  namespace: acns-demo
+  labels:
+    app: http-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-client
+  template:
+    metadata:
+      labels:
+        app: http-client
+    spec:
+      containers:
+        - name: http-client
+          image: curlimages/curl:latest
+          command: ["sleep", "infinity"]

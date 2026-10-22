@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.25
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: data
+          mountPath: /sharedfolder
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: azure-disk-pvc

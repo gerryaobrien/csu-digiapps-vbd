@@ -63,7 +63,7 @@ In this exercise you will create a simple AKS cluster. **You will reuse this sam
 
 1. Open a Windows Terminal window using PowerShell.
 
-![Windows Terminal icon in taskbar](content/windows-terminal.png)
+![Windows Terminal icon in taskbar](./images/windows-terminal.png)
 
 > Windows Terminal allows you to open tabbed command terminals.
 
@@ -83,7 +83,7 @@ Click on Username and password to Autofill and Authenticate.
 Post Authentication, below screen shows up with the pre-defined Subscription to choose.
 Select 1 and enter.
 
-!IMAGE[subchoose.jpg](instructions287320/subchoose.jpg)
+!IMAGE[subchoose.jpg](./images/subchoose.jpg)
 
 4. Register needed providers.
 
@@ -109,7 +109,7 @@ az provider register --namespace Microsoft.Kubernetes
 7. Scroll down and select **Resource providers**.
 
 
-!IMAGE[azure-resources.jpg](instructions287320/azure-resources.jpg)
+!IMAGE[azure-resources.jpg](./images/azure-resources.jpg)
 8. Confirm the following required providers are registered. Select **Register** for any provider whose status is **NotRegistered**, then select **Refresh** until its status is **Registered**: **Microsoft.Storage**, **Microsoft.Compute**, **Microsoft.Network**, **Microsoft.Monitor**, **Microsoft.Insights**, **Microsoft.ManagedIdentity**, **Microsoft.OperationalInsights**, **Microsoft.OperationsManagement**, **Microsoft.KeyVault**, **Microsoft.ContainerRegistry**, **Microsoft.ContainerService**, and **Microsoft.Kubernetes**.
 
 ### Task 2 - Define variables and create resource group
@@ -184,7 +184,7 @@ kubectl get nodes
 
 This should return a list of nodes similar to the one below:
 
-![kubectl get nodes output showing cluster nodes](content/node-list.png)
+![kubectl get nodes output showing cluster nodes](./images/node-list.png)
 
 [Module 1: Kubernetes Fundamentals](#module-1-kubernetes-fundamentals)
 
@@ -218,7 +218,7 @@ kubectl get pods
 
 You should see a pod named **nginx-pod**
 
-![kubectl get pods output showing nginx-pod](content/simple-pod.png)
+![kubectl get pods output showing nginx-pod](./images/simple-pod.png)
 
 4. Add a second pod, then check the list again.
 
@@ -235,7 +235,7 @@ kubectl get pods
 kubectl get pods --show-labels
 ```
 
-![kubectl get pods --show-labels output](content/pod-list-labels.png)
+![kubectl get pods --show-labels output](./images/pod-list-labels.png)
 
 2. Let's say you want to list pods that have a label named **kind=web** associated with them. You can use **-l** switch to apply filter based on labels.
 
@@ -265,7 +265,7 @@ kubectl get pods nginx-pod -o yaml > mypod.yaml
 code mypod.yaml
 ```
 
-![kubectl get pods -o yaml output in VS Code](content/pod-details.png)
+![kubectl get pods -o yaml output in VS Code](./images/pod-details.png)
 
 **NOTE:** Observe all the properties that Kubernetes populated with default values when it saved the Pod definition to its database.
 
@@ -360,7 +360,7 @@ kubectl apply -f Module1/ng-svc.yaml
 kubectl get all --show-labels
 ```
 
-![kubectl get all --show-labels output](content/get-all.png)
+![kubectl get all --show-labels output](./images/get-all.png)
 
 ### Task 2 - Access version 1.0 of application
 
@@ -370,11 +370,11 @@ kubectl get all --show-labels
 kubectl get svc
 ```
 
-![kubectl get svc output with EXTERNAL-IP column](content/services.png)
+![kubectl get svc output with EXTERNAL-IP column](./images/services.png)
 
 2. When you see an **EXTERNAL-IP** assigned, open a browser with that address. Example: **http://20.81.24.216**
 
-![nginx version 1.0 sample webpage](content/kube1.png)
+![nginx version 1.0 sample webpage](./images/kube1.png)
 
 ### Task 3 - Update the Deployment to version 2.0
 
@@ -400,7 +400,7 @@ kubectl get pods
 kubectl describe deployment ng-dep
 ```
 
-![kubectl describe deployment ng-dep output showing image 2.0](content/kube-describe.png)
+![kubectl describe deployment ng-dep output showing image 2.0](./images/kube-describe.png)
 
 > Notice the Image section (under Containers) shows the value of container image as **2.0**.
 
@@ -410,7 +410,7 @@ kubectl describe deployment ng-dep
 kubectl get all
 ```
 
-![kubectl get all output showing v2 ReplicaSet](content/get-all-2.png)
+![kubectl get all output showing v2 ReplicaSet](./images/get-all-2.png)
 
 > Notice that the old replica set still exists, even though it has 0 Desired Pods.
 
@@ -429,13 +429,13 @@ Or
 kubectl describe rs <old-replicaset-name>
 ```
 
-![kubectl describe replicaset showing previous version](content/old-rs.png)
+![kubectl describe replicaset showing previous version](./images/old-rs.png)
 
 > Notice that the old definition still has the previous version number. This is maintained so you can roll back the change to that version if you wish.
 
 8. Access the 2.0 version of application by refreshing the browser at the same address as above.
 
-![nginx version 2.0 sample webpage](content/kube2.png)
+![nginx version 2.0 sample webpage](./images/kube2.png)
 
 ### Task 4 - Rollback the Deployment
 
@@ -455,7 +455,7 @@ kubectl rollout undo deploy/ng-dep
 
 3. Wait a few seconds and refresh the browser again.
 
-![nginx version 1.0 sample webpage after rollback](content/kube1.png)
+![nginx version 1.0 sample webpage after rollback](./images/kube1.png)
 
 > Notice the site is back to the previous version.
 
@@ -569,7 +569,7 @@ kubectl port-forward service/sample-svc 8080:80
 Open <http://localhost:8080> in the VM's browser. Keep port-forwarding running
 until you finish this task, then press **Ctrl+C**.
 
-![sample service webpage showing pod IP address](content/sample-svc.png)
+![sample service webpage showing pod IP address](./images/sample-svc.png)
 
 2. The website displays the selected Pod's IP information. A port-forward
    session targets one Pod, so refreshing this URL does not demonstrate load
@@ -607,7 +607,7 @@ The example Deployment below configures a MySQL instance to write its activities
 
 1. Open a Windows Terminal window (defaults to PowerShell).
 
-![Windows Terminal icon in taskbar](content/windows-terminal.png)
+![Windows Terminal icon in taskbar](./images/windows-terminal.png)
 
 2. Review the **Module1/mysql-initdb-cm.yaml** file.
 
@@ -761,7 +761,7 @@ select * from friends;
 
 6. Switch to the other window and verify that the second container is showing the log.
 
-![MySQL activity log tail output in container](content/sqllog.png)
+![MySQL activity log tail output in container](./images/sqllog.png)
 
 7. Exit out of the **MySql** console.
 
@@ -817,7 +817,7 @@ References:
 
 1. Open a Windows Terminal window using PowerShell.
 
-![Windows Terminal icon in taskbar](content/windows-terminal.png)
+![Windows Terminal icon in taskbar](./images/windows-terminal.png)
 
 > Windows Terminal allows you to open tabbed command terminals.
 
@@ -827,7 +827,7 @@ References:
 az login
 ```
 
-!IMAGE[azlogin.jpg](instructions285565/azlogin.jpg)
+!IMAGE[azlogin.jpg](./images/azlogin.jpg)
 Choose Work or school Account
 Click on Username and password to Autofill and Authenticate.
 
@@ -836,7 +836,7 @@ Click on Username and password to Autofill and Authenticate.
 Post Authentication, below screen shows up with the pre-defined Subscription to choose.
 Select 1 and enter.
 
-!IMAGE[subchoose.jpg](instructions287320/subchoose.jpg)
+!IMAGE[subchoose.jpg](./images/subchoose.jpg)
 
 4. Register needed providers.
 
@@ -862,7 +862,7 @@ az provider register --namespace Microsoft.Kubernetes
 7. Scroll down and select **Resource providers**.
 
 
-!IMAGE[azure-resources.jpg](instructions287320/azure-resources.jpg)
+!IMAGE[azure-resources.jpg](./images/azure-resources.jpg)
 8. Confirm the following required providers are registered. Select **Register** for any provider whose status is **NotRegistered**, then select **Refresh** until its status is **Registered**: **Microsoft.Storage**, **Microsoft.Compute**, **Microsoft.Network**, **Microsoft.Monitor**, **Microsoft.Insights**, **Microsoft.ManagedIdentity**, **Microsoft.OperationalInsights**, **Microsoft.OperationsManagement**, **Microsoft.KeyVault**, **Microsoft.ContainerRegistry**, **Microsoft.ContainerService**, and **Microsoft.Kubernetes**.
 
 ### Task 2 - Define variables and create resource group
@@ -921,7 +921,7 @@ kubectl get nodes
 
 This should return a list of nodes similar to the one below:
 
-![kubectl get nodes output showing cluster nodes](content/node-list.png)
+![kubectl get nodes output showing cluster nodes](./images/node-list.png)
 
 
 ## Enabling Add-ons and extensions
@@ -1391,7 +1391,7 @@ kubectl get applicationloadbalancer alb-test -n alb-test-infra -o yaml -w
 
 You can also visualize the managed AGC instance in the Azure Portal.
 
-![Application Gateway for Containers resource](../images/agwc-in-portal.jpg)
+![Application Gateway for Containers resource](./images/agwc-in-portal.jpg)
 
 #### Create a Gateway
 
@@ -1423,7 +1423,7 @@ spec:
 
 Visualize the Frontend in the Azure Portal:
 
-![Application Gateway for Containers frontend](../images/agwc-frontend.jpg)
+![Application Gateway for Containers frontend](./images/agwc-frontend.jpg)
 
 #### Deploy an example web server and expose it as `HTTPRoute`
 
@@ -2285,7 +2285,7 @@ For the first exercise in this module you'll only need a simple AKS cluster, but
 
 1. Open a Windows Terminal window using PowerShell.
 
-![Windows Terminal icon in taskbar](content/windows-terminal.png)
+![Windows Terminal icon in taskbar](./images/windows-terminal.png)
 
 > Windows Terminal allows you to open tabbed command terminals.
 
@@ -2295,7 +2295,7 @@ For the first exercise in this module you'll only need a simple AKS cluster, but
 az login
 ```
 
-!IMAGE[azlogin.jpg](instructions285565/azlogin.jpg)
+!IMAGE[azlogin.jpg](./images/azlogin.jpg)
 Choose Work or school Account
 Click on Username and password to Autofill and Authenticate.
 
@@ -2304,7 +2304,7 @@ Click on Username and password to Autofill and Authenticate.
 Post Authentication, below screen shows up with the pre-defined Subscription to choose.
 Select 1 and enter.
 
-!IMAGE[subchoose.jpg](instructions287320/subchoose.jpg)
+!IMAGE[subchoose.jpg](./images/subchoose.jpg)
 
 4. Register needed providers.
 
@@ -2330,7 +2330,7 @@ az provider register --namespace Microsoft.Kubernetes
 7. Scroll down and select **Resource providers**.
 
 
-!IMAGE[azure-resources.jpg](instructions287320/azure-resources.jpg)
+!IMAGE[azure-resources.jpg](./images/azure-resources.jpg)
 8. Confirm the following required providers are registered. Select **Register** for any provider whose status is **NotRegistered**, then select **Refresh** until its status is **Registered**: **Microsoft.Storage**, **Microsoft.Compute**, **Microsoft.Network**, **Microsoft.Monitor**, **Microsoft.Insights**, **Microsoft.ManagedIdentity**, **Microsoft.OperationalInsights**, **Microsoft.OperationsManagement**, **Microsoft.KeyVault**, **Microsoft.ContainerRegistry**, **Microsoft.ContainerService**, and **Microsoft.Kubernetes**.
 
 ### Task 2 - Define variables and create resource group
@@ -3571,16 +3571,16 @@ Expected output:
 https://aks-labs-test-ase8bmffcgbqhjej.wus3.grafana.azure.com
 ```
 
-![aks-labs-dashboards](assets/aks-labs-dashboards.png)
+![aks-labs-dashboards](./images/aks-labs-dashboards.png)
 Now you, should be able to browse to your Azure Managed Grafana instance and see the `kube-apiserver` and `etcd` metrics dashboards in the AKS-Labs folder.
 
-![aks-labs-dashboards](assets/dashboard-api-server.png)
+![aks-labs-dashboards](./images/dashboard-api-server.png)
 The new `kube-apiserver` metrics dashboard in Grafana.
 
 :::info
 It might take up to 5 minutes for data to start showing up in your Grafana dashboard. You can refresh this page or set it to auto-refresh every few seconds
 
-![dashboard-refresh](assets/dashboard-refresh.png)
+![dashboard-refresh](./images/dashboard-refresh.png)
 :::
 
 ###  Example: Customizing the collection of metrics
@@ -3626,39 +3626,39 @@ kubectl edit cm ama-metrics-settings-configmap -n kube-system
 
 3. Under the `default-targets-metrics-keep-list`, add `apiserver_longrunning_requests` and then save the `ConfigMap`.
 
-![adding apiserver_longrunning_requests](assets/customizing-the-collection.png)
+![adding apiserver_longrunning_requests](./images/customizing-the-collection.png)
 
 It might take 1 minute for the new metric to start showing up. We can check it in the Azure Monitor Workspace and then on Grafana. 
 
 1. Navigate to the **Azure Monitor Workspace** attached to the AKS cluster. You can find that information in the Azure Portal by navigating to the AKS Cluster created for this lab, then to **Monitor**, **Monitor Settings**. The information for the `Azure Monitor workspace` will be showed on this page.
 
-![Azure Monitor Workspace](assets/azure-monitor-workspace.png)
+![Azure Monitor Workspace](./images/azure-monitor-workspace.png)
 
 Once in the `Azure Monitor workspace`, navigate to the `Prometheus Explorer` and enter the `apiserver_longrunning_requests` in the `PromQL` searching box:
 
-![prometheus-explorer](assets/prometheus-explorer.png)
+![prometheus-explorer](./images/prometheus-explorer.png)
 
 #### Create a dashboard in Grafana to visualize the new metric
 
 Navigate to your Manage Grafana Instance, click on `Dashboards`->`AKS-Labs`->`API Server` 
 
-![aks-labs-dashboards](assets/aks-labs-dashboards.png)
+![aks-labs-dashboards](./images/aks-labs-dashboards.png)
 
 Click on `Add`  and then `Visualization`
 
-![Add new visualization](assets/add-new-dashboard.png)
+![Add new visualization](./images/add-new-dashboard.png)
 
 Verify that your selected Data Source is `${prom_ds}`
 
-![ds_prom is selected](assets/ds_prom.png)
+![ds_prom is selected](./images/ds_prom.png)
 
 To customize the visualization, we need to first toggle the `Code` button in the `Query` part of the panel:
 
-![enable code](assets/enable-code.png)
+![enable code](./images/enable-code.png)
 
 Next, we will do the following steps on this panel:
 
-![custom grafana dashboard](assets/custom-grafana-dashboard.png)
+![custom grafana dashboard](./images/custom-grafana-dashboard.png)
 
 1. Create a new `Time series` dashboard (should be the default visualization).
 2. Add a `Title` (e.g.: apiserver_longrunning_requests)
@@ -3671,15 +3671,15 @@ sum(rate(apiserver_longrunning_requests{cluster="$cluster"}[$__rate_interval]))
 ```
 6. Click on Save
 
-![click on save](assets/click-save.png)
+![click on save](./images/click-save.png)
 
 7. Finally, click on Save Dashboard
 
-![save the dashboard](assets/save-dashboard.png)
+![save the dashboard](./images/save-dashboard.png)
 
 After close to 5 minutes, you should start seeing the `apiserver_longrunning_requests` metrics showing up in your new dashboard
 
-![apiserver_longrunning_requests dasboard](assets/apiserver_longrunning_requests-dashboard.png)
+![apiserver_longrunning_requests dasboard](./images/apiserver_longrunning_requests-dashboard.png)
 
 Congratulations, you have managed to add a specific metric from the `controlplane-apiserver`! 
 
@@ -3759,14 +3759,14 @@ kubectl port-forward ${AMA_METRICS_POD_NAME} -n kube-system 9090
 
 Open your browser at: http://localhost:9090
 
-![prometheus-agent](assets/prometheus-agent.png)
+![prometheus-agent](./images/prometheus-agent.png)
 
 * Under **Status > Targets**, you'll find the target:
 `podMonitor/default/prometheus-reference-app-job/0`
 
 * Under **Status > Service Discovery**, you'll see label-discovered targets for the same.
 
-![metrics endpoints](assets/metrics-ep.png)
+![metrics endpoints](./images/metrics-ep.png)
 
 When you're done, stop port-forwarding by pressing `Ctrl+C`.
 
@@ -3828,11 +3828,11 @@ Once metrics have been scraped for a few moments we can now use the **Explore** 
 1. Open **Azure Managed Grafana**, go to the **Explore** tab
 
 2. Change the Data Source from `Azure Monitor` to `Managed_Prometheus_azmon-adk-labs`.
-![grafana-explore-data-source-picker](assets/grafana-explore-data-source-picker.png)
+![grafana-explore-data-source-picker](./images/grafana-explore-data-source-picker.png)
 
 3. For example, we can try to query for the `max_dimension_rainfall_histogram_bucket` metric
 
-![podMonitor Metric](assets/podMonitor.png)
+![podMonitor Metric](./images/podMonitor.png)
 
 We can now see the new `PodMonmitor` metrics showing up in Grafana ! From there, you can create your own dashboard using the same principles we saw earlier when we [created a dashboard in Grafana to visualize a new metric](#create-a-dashboard-in-grafana-to-visualize-the-new-metric)
 
@@ -3923,7 +3923,7 @@ az aks addon enable --addon azure-keyvault-secrets-provider --name $AKS_NAME --r
 az aks addon list --name $AKS_NAME --resource-group $RESOURCE_GROUP -o table
 ```
 
-![AKS addons list showing azure-keyvault-secrets-provider enabled](content/key-vault-addon.png)
+![AKS addons list showing azure-keyvault-secrets-provider enabled](./images/key-vault-addon.png)
 
 4. Create Key Vault. Notice the **--enable-rbac-authorization** option. This will allow AKS to use its managed identity to access the Key Vault.
 
@@ -3939,7 +3939,7 @@ az keyvault create --name $KV_NAME --resource-group $RESOURCE_GROUP --enable-rba
 az keyvault secret list --vault-name $KV_NAME
 ```
 
-![Key Vault not authorized error message](content/key-vault-not-auth.png)
+![Key Vault not authorized error message](./images/key-vault-not-auth.png)
 
 Even though you created the Key Vault, you don't automatically have access to the Data Plane of the vault. You must give yourself additional permissions first.
 
@@ -3995,7 +3995,7 @@ You'll need to assign AKS the **Key Vault Secrets User** role so it's able to re
 az identity list --query "[].{name:name,ClientId:clientId}" -o table
 ```
 
-![az identity list output showing azurekeyvaultsecretsprovider identity](content/aks-kv-identity.png)
+![az identity list output showing azurekeyvaultsecretsprovider identity](./images/aks-kv-identity.png)
 
 2. Get the object id of that managed identity AKS is using
 
@@ -4211,7 +4211,7 @@ kubectl apply -f Module8/pod-kv.yaml
 kubectl exec -it pod-kv -- printenv
 ```
 
-![kubectl exec printenv output showing SECRET_VALUE](content/key-vault-env1.png)
+![kubectl exec printenv output showing SECRET_VALUE](./images/key-vault-env1.png)
 
 6. Verify the Secret object has been created and is available for other Pods to use.
 
@@ -4219,7 +4219,7 @@ kubectl exec -it pod-kv -- printenv
 kubectl get secret
 ```
 
-![kubectl get secret output showing k8s-secret](content/key-vault-secret.png)
+![kubectl get secret output showing k8s-secret](./images/key-vault-secret.png)
 
 7. Delete the Pod and the Kubernetes Secret object will also be deleted. Once an injected Secret is no longer referenced by any Pods, it's automatically deleted.
 

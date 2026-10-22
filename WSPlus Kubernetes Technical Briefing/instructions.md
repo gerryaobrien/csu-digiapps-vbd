@@ -73,7 +73,7 @@ In this exercise you will create a simple AKS cluster. **You will reuse this sam
 az login
 ```
 
-!IMAGE[azlogin.jpg](/images/azlogin.jpg)
+!IMAGE[azlogin.jpg](./images/azlogin.jpg)
 Choose Work or school Account
 Click on Username and password to Autofill and Authenticate.
 

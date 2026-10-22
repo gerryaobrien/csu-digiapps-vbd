@@ -1,0 +1,160 @@
+{
+    "if": {
+        "not": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.ContainerService/managedClusters"
+                        },
+                        {
+                            "field": "name",
+                            "equals": "[concat('aks-',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        },
+                        {
+                            "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].count",
+                            "in": [
+                                1,
+                                2,
+                                3
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].name",
+                            "in": [
+                                "linux1",
+                                "win1",
+                                "system1",
+                                "nodepool1"
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].maxCount",
+                            "in": [
+                                null,
+                                3
+                            ]
+                        },
+                        {
+                            "field": "location",
+                            "notEquals": "global"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.ContainerRegistry/registries"
+                        },
+                        {
+                            "field": "name",
+                            "contains": "[concat('acr',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        },
+                        {
+                            "field": "Microsoft.ContainerRegistry/registries/sku.name",
+                            "equals": "Standard"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.OperationalInsights/workspaces"
+                        },
+                        {
+                            "field": "name",
+                            "contains": "[concat('aks-',subscription().tags.LabInstance,'-law')]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        },
+                        {
+                            "field": "Microsoft.OperationalInsights/workspaces/sku.name",
+                            "equals": "PerGB2018"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "contains": "Microsoft.Compute/virtualMachineScaleSets"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/MC_azure-rg_aks-"
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "name", "match": "aks-linux1-########-vmss" },
+                                { "field": "name", "match": "akswin1-########-vmss" },
+                                { "field": "name", "match": "akswin1" },
+                                { "field": "name", "match": "aks-system1-########-vmss" },
+                                { "field": "name", "match": "aks-nodepool1-########-vmss" }
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/sku.name",
+                            "in": [
+                                "Standard_D2as_v5",
+                                "Standard_D2s_v5",
+                                "Standard_D2ads_v5",
+                                "Standard_A2m_v2"
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/sku.capacity",
+                            "lessOrEquals": 3
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "Microsoft.Compute/imageId", "contains": "/subscriptions/109a5e88-712a-48ae-9078-9ca8b3c81345/resourceGroups/AKS-Windows/providers/Microsoft.Compute/galleries/AKSWindows/images/" },
+                                { "field": "Microsoft.Compute/imageId", "contains": "/subscriptions/109a5e88-712a-48ae-9078-9ca8b3c81345/resourceGroups/AKS-Ubuntu/providers/Microsoft.Compute/galleries/AKSUbuntu/images/"}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.Network"
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.Resources/deployments"
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.ManagedIdentity"
+                },
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.ChangeAnalysis/resourceChanges",
+                        "Microsoft.Insights/dataCollectionRules",
+                        "Microsoft.Storage/storageAccounts",
+                        "Microsoft.Management",
+                        "Microsoft.Management/managementgroups",
+                        "Microsoft.keyvault",
+                        "Microsoft.Keyvault/vaults",
+                        "Microsoft.OperationsManagement/solutions"
+                    ]
+                }
+            ]
+        }
+    },
+    "then": {
+        "effect": "deny"
+    }
+}

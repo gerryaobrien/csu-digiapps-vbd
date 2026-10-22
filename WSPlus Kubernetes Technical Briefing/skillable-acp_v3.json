@@ -1,0 +1,325 @@
+{
+    "if": {
+        "not": {
+            "anyOf": [
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.ContainerService/managedClusters"
+                        },
+                        {
+                            "field": "name",
+                            "equals": "[concat('aks-',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        },
+                        {
+                            "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].count",
+                            "in": [
+                                1,
+                                2,
+                                3,
+                                4,
+                                5
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].name",
+                            "in": [
+                                "linux1",
+                                "win1",
+                                "system1",
+                                "nodepool1",
+                                "linux1nap",
+                                "acstorpool"
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.ContainerService/managedClusters/agentPoolProfiles[*].maxCount",
+                            "in": [
+                                null,
+                                3,
+                                5
+                            ]
+                        },
+                        {
+                            "field": "location",
+                            "notEquals": "global"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.Compute/disks"
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "name", "match": "aks-linux1nap-....." },
+                                { "field": "name", "match": "aks-acstorpool-....." },
+                                { "field": "name", "like": "pvc-*" },
+                                { "field": "name", "like": "acstor-*" },
+                                { "field": "name", "match": "MyManagedDisk" }
+                            ]
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/MC_azure-rg_aks-"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.ServiceNetworking/trafficControllers"
+                        },
+                        {
+                            "field": "name",
+                            "contains": "alb-........"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/MC_azure-rg_aks-"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.ServiceNetworking/trafficControllers/associations"
+                        },
+                        {
+                            "field": "name",
+                            "contains": "as-........"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/MC_azure-rg_aks-"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.ContainerRegistry/registries"
+                        },
+                        {
+                            "field": "name",
+                            "contains": "[concat('acr',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        },
+                        {
+                            "field": "Microsoft.ContainerRegistry/registries/sku.name",
+                            "in": [
+                                "Standard",
+                                "Premium"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.OperationalInsights/workspaces"
+                        },
+                        {
+                            "field": "name",
+                            "contains": "[concat('aks-',subscription().tags.LabInstance,'-law')]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        },
+                        {
+                            "field": "Microsoft.OperationalInsights/workspaces/sku.name",
+                            "equals": "PerGB2018"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "contains": "Microsoft.Compute/virtualMachines"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/MC_azure-rg_aks-"
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "name", "match": "aks-linux1nap-....." },
+                                { "field": "name", "match": "aks-acstorpool-....." }
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachines/sku.name",
+                            "in": [
+                                "Standard_D2as_v5",
+                                "Standard_D2s_v5",
+                                "Standard_D2ads_v5",
+                                "Standard_A2m_v2",
+                                "Standard_L8s_v3"
+                            ]
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "Microsoft.Compute/imageId", "contains": "/subscriptions/109a5e88-712a-48ae-9078-9ca8b3c81345/resourceGroups/AKS-Ubuntu/providers/Microsoft.Compute/galleries/AKSUbuntu/images/"}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.Compute/virtualMachines/extensions"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "contains": "Microsoft.Compute/virtualMachineScaleSets"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/MC_azure-rg_aks-"
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "name", "match": "aks-linux1-########-vmss" },
+                                { "field": "name", "match": "aks-linux1-#####" },
+                                { "field": "name", "match": "akswin1-########-vmss" },
+                                { "field": "name", "match": "akswin1" },
+                                { "field": "name", "match": "aks-system1-########-vmss" },
+                                { "field": "name", "match": "aks-nodepool1-########-vmss" },
+                                { "field": "name", "match": "aks-acstorpool-########-vmss" }
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/sku.name",
+                            "in": [
+                                "Standard_D2as_v5",
+                                "Standard_D2s_v5",
+                                "Standard_D2ads_v5",
+                                "Standard_A2m_v2",
+                                "Standard_L8s_v3"
+                            ]
+                        },
+                        {
+                            "field": "Microsoft.Compute/virtualMachineScaleSets/sku.capacity",
+                            "lessOrEquals": 5
+                        },
+                        {
+                            "anyOf": [
+                                { "field": "Microsoft.Compute/imageId", "contains": "/subscriptions/109a5e88-712a-48ae-9078-9ca8b3c81345/resourceGroups/AKS-Windows/providers/Microsoft.Compute/galleries/AKSWindows/images/" },
+                                { "field": "Microsoft.Compute/imageId", "contains": "/subscriptions/109a5e88-712a-48ae-9078-9ca8b3c81345/resourceGroups/AKS-Ubuntu/providers/Microsoft.Compute/galleries/AKSUbuntu/images/"}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.Network"
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.Dashboard/grafana"
+                        },
+                        {
+                            "field": "name",
+                            "equals": "[concat('grafana-',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.Monitor/accounts"
+                        },
+                        {
+                            "field": "name",
+                            "equals": "[concat('amw-',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        }
+                    ]
+                },
+                {
+                    "allOf": [
+                        {
+                            "field": "type",
+                            "equals": "Microsoft.KeyVault/vaults"
+                        },
+                        {
+                            "field": "name",
+                            "equals": "[concat('kv-',subscription().tags.LabInstance)]"
+                        },
+                        {
+                            "field": "id",
+                            "contains": "/resourceGroups/azure-rg/"
+                        }
+                    ]
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.KubernetesConfiguration"
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.PolicyInsights"
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.Resources/deployments"
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.ManagedIdentity"
+                },
+                {
+                    "field": "type",
+                    "contains": "Microsoft.Authorization"
+                },
+                {
+                    "field": "type",
+                    "in": [
+                        "Microsoft.ChangeAnalysis/resourceChanges",
+                        "Microsoft.Insights/dataCollectionRules",
+                        "Microsoft.Insights/dataCollectionEndpoints",
+                        "Microsoft.AlertsManagement/prometheusRuleGroups",
+                        "Microsoft.Storage/storageAccounts",
+                        "Microsoft.Management",
+                        "Microsoft.Management/managementgroups",
+                        "Microsoft.OperationsManagement/solutions"
+                    ]
+                }
+            ]
+        }
+    },
+    "then": {
+        "effect": "audit"
+    }
+}

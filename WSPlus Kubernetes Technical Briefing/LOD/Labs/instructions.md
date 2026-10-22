@@ -44,7 +44,7 @@ In this exercise you will create a simple AKS cluster. **You will reuse this sam
 
 ### Task 1 - Login into your subscription and register providers
 
-1. Open a Windows Terminal window using Ubuntu (defaults to PowerShell).
+1. Open a Windows Terminal window using Ubuntu.
 
 ![Windows Terminal icon in taskbar](content/windows-terminal.png)
 
@@ -92,7 +92,7 @@ az provider register --namespace Microsoft.Kubernetes
 
 
 !IMAGE[azure-resources.jpg](instructions287320/azure-resources.jpg)
-8. Watch the progress of the registration process until all the providers listed above have been registered. Click the _Refresh_ button every few minutes to update the progress. Once everything has been registered, continue with the tasks in this lab.
+8. Confirm the following required providers are registered. Select **Register** for any provider whose status is **NotRegistered**, then select **Refresh** until its status is **Registered**: **Microsoft.Storage**, **Microsoft.Compute**, **Microsoft.Network**, **Microsoft.Monitor**, **Microsoft.Insights**, **Microsoft.ManagedIdentity**, **Microsoft.OperationalInsights**, **Microsoft.OperationsManagement**, **Microsoft.KeyVault**, **Microsoft.ContainerRegistry**, **Microsoft.ContainerService**, and **Microsoft.Kubernetes**.
 
 ### Task 2 - Define variables and create resource group
 
@@ -116,11 +116,21 @@ echo "Location: $LOCATION"
 
 3. Set the VM SKU to one of the available values or use the default below.
 
-**WARNING**: VM SKUs can change per region use the default first then fall back to other available SKUS. Consult your CSA for guidance. Available SKUS: Standard_D2as_v5, Standard_A2m_v2, Standard_D2s_v5, Standard_D2ads_v5
+**WARNING**: VM SKU availability depends on both the region and the subscription. Start with the default, then validate it before creating the cluster. Available SKUs to try: Standard_D2as_v5, Standard_A2m_v2, Standard_D2s_v5, Standard_D2ads_v5
 
 ```sh
 export VM_SKU="Standard_D2as_v5"
 ```
+
+4. Check whether the selected VM SKU has any restrictions for your subscription in the selected region.
+
+```sh
+az vm list-skus --location "$LOCATION" --size "$VM_SKU" --all \
+  --query "[?name=='$VM_SKU'].{Name:name,Restrictions:restrictions}" \
+  --output table
+```
+
+If the result shows `NotAvailableForSubscription`, set `VM_SKU` to another SKU from the list and run the check again. Continue when the selected SKU has no subscription restriction. Ask your instructor for guidance if none of the listed SKUs are available.
 
 ### Task 3 - Create a basic cluster using Azure CLI
 
@@ -382,17 +392,23 @@ kubectl get all
 
 > Notice that the old replica set still exists, even though it has 0 Desired Pods.
 
-6. Run the _describe_ command on that old ReplicaSet.
+6. List the ReplicaSets and identify the earlier ReplicaSet that has `0` in the `DESIRED`, `CURRENT`, and `READY` columns.
 
+```sh
+kubectl get rs
 ```
-kubectl describe rs <old replicaset name>
+
+7. Run the _describe_ command on that old ReplicaSet.
+
+```sh
+kubectl describe rs <old-replicaset-name>
 ```
 
 ![kubectl describe replicaset showing previous version](content/old-rs.png)
 
 > Notice that the old definition still has the previous version number. This is maintained so you can roll back the change to that version if you wish.
 
-7. Access the 2.0 version of application by refreshing the browser at the same address as above.
+8. Access the 2.0 version of application by refreshing the browser at the same address as above.
 
 ![nginx version 2.0 sample webpage](content/kube2.png)
 
@@ -698,7 +714,7 @@ az group delete --resource-group $RESOURCE_GROUP
 
 # Module 2: What is AKS?
 
-This module covers AKS-specific extras that build on the basic Kubernetes cluster from Module 1: enabling **Azure Policy** for governance, **KEDA** for event-driven autoscaling, and the **Dapr** cluster extension for distributed application building blocks. You will then deploy the Azure Vote sample app.
+This module covers AKS-specific extras that build on the basic Kubernetes cluster from Module 1: enabling **Azure Policy** for governance, **KEDA** for event-driven autoscaling, and the **Dapr** cluster extension for distributed application building blocks. You will then deploy the AKS Store demo app.
 
 References:
 - [Azure Policy for AKS](https://learn.microsoft.com/azure/aks/use-azure-policy)
@@ -763,7 +779,7 @@ az provider register --namespace Microsoft.Kubernetes
 
 
 !IMAGE[azure-resources.jpg](instructions287320/azure-resources.jpg)
-8. Watch the progress of the registration process until all the providers listed above have been registered. Click the _Refresh_ button every few minutes to update the progress. Once everything has been registered, continue with the tasks in this lab.
+8. Confirm the following required providers are registered. Select **Register** for any provider whose status is **NotRegistered**, then select **Refresh** until its status is **Registered**: **Microsoft.Storage**, **Microsoft.Compute**, **Microsoft.Network**, **Microsoft.Monitor**, **Microsoft.Insights**, **Microsoft.ManagedIdentity**, **Microsoft.OperationalInsights**, **Microsoft.OperationsManagement**, **Microsoft.KeyVault**, **Microsoft.ContainerRegistry**, **Microsoft.ContainerService**, and **Microsoft.Kubernetes**.
 
 ### Task 2 - Define variables and create resource group
 
@@ -919,28 +935,37 @@ az k8s-extension create --cluster-type managedClusters --cluster-name $AKS_NAME 
 
 > If the CLI prompts asking whether Dapr is already installed (only relevant if you have an existing OSS Dapr install on the cluster), answer **N** and press Enter. On a fresh cluster this prompt will not appear.
 
+> [!NOTE]
+> If Azure Policy denies the Dapr extension, use the policy assignment and definition IDs in the error to identify the exact blocking rule in **Azure Policy** > **Compliance**. Ask your Azure Policy administrator to allow the Dapr extension or, when governance permits, create a narrowly scoped exemption for this AKS cluster. Do not exempt unrelated policies or a broader scope.
+
 These exercises demonstrate how to provision an AKS cluster, enable add-ons, and install cluster extensions.
 
 ## Deploying workloads to nodes
 
-### Deploying the Azure Vote app
+### Deploying the AKS Store Demo app
 
 Download the YAML manifest.
 
 ```sh
-wget https://raw.githubusercontent.com/Azure-Samples/azure-voting-app-redis/refs/heads/master/azure-vote-all-in-one-redis.yaml
+wget https://raw.githubusercontent.com/Azure-Samples/aks-store-demo/main/aks-store-all-in-one.yaml -O aks-store-all-in-one.yaml
+```
+
+Create a namespace for the sample app.
+
+```sh
+kubectl create namespace pets
 ```
 
 Apply the manifest.
 
 ```sh
-kubectl apply -f azure-vote-all-in-one-redis.yaml
+kubectl apply -f aks-store-all-in-one.yaml -n pets
 ```
 
-Wait until `azure-vote-front` receives an external IP, then open it in your browser.
+Wait until `store-front` receives an external IP, then open it in your browser.
 
 ```sh
-kubectl get services -n default
+kubectl get services -n pets
 ```
 
 ## Deleting the cluster
@@ -1110,6 +1135,9 @@ SUBSCRIPTION_ID='<your subscription id>'
 az login
 az account set --subscription $SUBSCRIPTION_ID
 
+# Display the Azure CLI core version before installing preview extensions
+az version --query '"azure-cli"' -o tsv
+
 # Register required resource providers
 az provider register --namespace Microsoft.ContainerService
 az provider register --namespace Microsoft.Network
@@ -1124,11 +1152,16 @@ az extension add --name alb         --upgrade
 az feature register --namespace Microsoft.ContainerService --name ManagedGatewayAPIPreview
 az feature register --namespace Microsoft.ContainerService --name ApplicationLoadBalancerPreview
 
-# Wait until both features report Registered, then re-register the provider
+# Wait until both features report Registered
 az feature show --namespace Microsoft.ContainerService --name ManagedGatewayAPIPreview        --query properties.state
 az feature show --namespace Microsoft.ContainerService --name ApplicationLoadBalancerPreview  --query properties.state
 az provider register --namespace Microsoft.ContainerService
 ```
+
+> [!IMPORTANT]
+> If either extension command fails or the add-on flags are unavailable, update the Azure CLI core and rerun both extension commands. Updating an extension does not update the Azure CLI core. The AGC add-on quickstart does not publish a fixed minimum CLI version, so use a currently supported Azure CLI instead of relying on a hard-coded version threshold.
+
+In the Azure Portal, open your subscription's **Resource providers** page and confirm that **Microsoft.ContainerService**, **Microsoft.Network**, **Microsoft.NetworkFunction**, and **Microsoft.ServiceNetworking** are registered. Select **Register** for any provider that is not registered, then select **Refresh** until its status is **Registered**. After both preview features report `Registered`, select **Microsoft.ContainerService**, select **Register**, and refresh its status.
 
 > Feature registration is **subscription-scoped** and one-time. Once both features show `Registered`, you don't need to repeat these steps in subsequent lab runs on the same subscription.
 
@@ -2109,7 +2142,7 @@ az provider register --namespace Microsoft.Kubernetes
 
 
 !IMAGE[azure-resources.jpg](instructions287320/azure-resources.jpg)
-8. Watch the progress of the registration process until all the providers listed above have been registered. Click the _Refresh_ button every few minutes to update the progress. Once everything has been registered, continue with the tasks in this lab.
+8. Confirm the following required providers are registered. Select **Register** for any provider whose status is **NotRegistered**, then select **Refresh** until its status is **Registered**: **Microsoft.Storage**, **Microsoft.Compute**, **Microsoft.Network**, **Microsoft.Monitor**, **Microsoft.Insights**, **Microsoft.ManagedIdentity**, **Microsoft.OperationalInsights**, **Microsoft.OperationsManagement**, **Microsoft.KeyVault**, **Microsoft.ContainerRegistry**, **Microsoft.ContainerService**, and **Microsoft.Kubernetes**.
 
 ### Task 2 - Define variables and create resource group
 

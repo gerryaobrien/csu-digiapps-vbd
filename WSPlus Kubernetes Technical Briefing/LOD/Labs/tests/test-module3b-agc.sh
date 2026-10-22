@@ -63,8 +63,15 @@ phase_reset() {
 
 phase_preview() {
   say "Registering preview features and CLI extensions"
-  az extension add --name aks-preview --upgrade --only-show-errors >/dev/null 2>&1 || true
-  az extension add --name alb         --upgrade --only-show-errors >/dev/null 2>&1 || true
+  local cli_version
+  cli_version="$(az version --query '"azure-cli"' -o tsv 2>/dev/null || echo unknown)"
+  say "Azure CLI version: $cli_version"
+  if ! az extension add --name aks-preview --upgrade --only-show-errors; then
+    fail "Could not install aks-preview with Azure CLI $cli_version. Update the Azure CLI core and retry."
+  fi
+  if ! az extension add --name alb --upgrade --only-show-errors; then
+    fail "Could not install alb with Azure CLI $cli_version. Update the Azure CLI core and retry."
+  fi
   for ns in Microsoft.ContainerService Microsoft.Network Microsoft.NetworkFunction Microsoft.ServiceNetworking; do
     az provider register --namespace "$ns" >/dev/null 2>&1 || true
   done

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Module 2: What is AKS? — Azure Policy + KEDA + Dapr + Azure Vote app.
+# Module 2: What is AKS? — Azure Policy + KEDA + Dapr + AKS Store demo.
 # Reuses the AKS cluster from Module 1 (aks-${LAB_INSTANCE} in azure-rg).
 #
 # Usage:
@@ -7,7 +7,7 @@
 #   LAB_INSTANCE=999001 ./test-module2.sh policy keda          # selected
 #   LAB_INSTANCE=999001 ./test-module2.sh cleanup
 #
-# Phases: setup policy keda dapr vote cleanup
+# Phases: setup policy keda dapr store cleanup
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_PHASES=("$@")
@@ -43,40 +43,47 @@ phase_keda() {
 
 phase_dapr() {
   say "Installing k8s-extension CLI + Dapr"
-  az extension add --name k8s-extension --upgrade --only-show-errors >/dev/null 2>&1 || \
-    az extension update --name k8s-extension --only-show-errors >/dev/null 2>&1 || true
+  local cli_version
+  cli_version="$(az version --query '"azure-cli"' -o tsv 2>/dev/null || echo unknown)"
+  say "Azure CLI version: $cli_version"
+  if ! az extension add --name k8s-extension --upgrade --only-show-errors; then
+    fail "Could not install k8s-extension with Azure CLI $cli_version. Update the Azure CLI core and retry."
+  fi
   az provider register --namespace Microsoft.KubernetesConfiguration >/dev/null
   if az k8s-extension show --cluster-type managedClusters --cluster-name "$AKS_NAME" \
        -g "$RESOURCE_GROUP" --name dapr >/dev/null 2>&1; then
     warn "Dapr extension already installed"
   else
-    az k8s-extension create --cluster-type managedClusters --cluster-name "$AKS_NAME" \
-      -g "$RESOURCE_GROUP" --name dapr --extension-type Microsoft.Dapr \
-      --auto-upgrade-minor-version false --yes
+    if ! az k8s-extension create --cluster-type managedClusters --cluster-name "$AKS_NAME" \
+        -g "$RESOURCE_GROUP" --name dapr --extension-type Microsoft.Dapr \
+        --auto-upgrade-minor-version false --yes; then
+      fail "Dapr installation failed. If Azure Policy denied it, identify the policy assignment in the error and request a narrowly scoped policy change or exemption."
+    fi
   fi
   kubectl get pods -n dapr-system 2>/dev/null || true
 }
 
-phase_vote() {
-  say "Deploying Azure Vote app"
+phase_store() {
+  say "Deploying AKS Store demo"
   local tmp; tmp="$(mktemp -d)"
-  curl -fsSL -o "$tmp/azure-vote.yaml" \
-    https://raw.githubusercontent.com/Azure-Samples/azure-voting-app-redis/refs/heads/master/azure-vote-all-in-one-redis.yaml
-  kubectl apply -f "$tmp/azure-vote.yaml"
-  say "Waiting for azure-vote-front external IP (up to 5 min)"
+  curl -fsSL -o "$tmp/aks-store.yaml" \
+    https://raw.githubusercontent.com/Azure-Samples/aks-store-demo/main/aks-store-all-in-one.yaml
+  kubectl create namespace pets --dry-run=client -o yaml | kubectl apply -f -
+  kubectl apply -f "$tmp/aks-store.yaml" -n pets
+  say "Waiting for store-front external IP (up to 5 min)"
   local ip="" i
   for i in $(seq 1 60); do
-    ip="$(kubectl get svc azure-vote-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)"
+    ip="$(kubectl get svc store-front -n pets -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)"
     [[ -n "$ip" ]] && break
     sleep 5
   done
-  [[ -n "$ip" ]] && ok "Azure Vote at http://$ip" || warn "no LB IP yet — kubectl get svc azure-vote-front"
+  [[ -n "$ip" ]] && ok "AKS Store at http://$ip" || warn "no LB IP yet — kubectl get svc store-front -n pets"
   rm -rf "$tmp"
 }
 
 phase_cleanup() {
-  say "Removing Azure Vote app, Dapr extension, and add-ons"
-  kubectl delete -f https://raw.githubusercontent.com/Azure-Samples/azure-voting-app-redis/refs/heads/master/azure-vote-all-in-one-redis.yaml --ignore-not-found
+  say "Removing AKS Store demo, Dapr extension, and add-ons"
+  kubectl delete namespace pets --ignore-not-found
   az k8s-extension delete --cluster-type managedClusters --cluster-name "$AKS_NAME" \
     -g "$RESOURCE_GROUP" --name dapr --yes 2>/dev/null || true
   az aks disable-addons --addons azure-policy -g "$RESOURCE_GROUP" -n "$AKS_NAME" 2>/dev/null || true
@@ -84,4 +91,4 @@ phase_cleanup() {
   cleanup_rg_or_cluster
 }
 
-run_phases setup policy keda dapr vote cleanup
+run_phases setup policy keda dapr store cleanup
